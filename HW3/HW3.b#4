@@ -764,8 +764,7 @@ design rules under a new name.</description>
 <attribute name="VALUE" x="37.211" y="40.9194" size="0.8128" layer="21" ratio="10" rot="R90"/>
 </element>
 <element name="U$1" library="HW2" package="DIL28-3" value="PIC32MX250F128B" x="25.4" y="29.21" smashed="yes" rot="R270">
-<attribute name="NAME" x="22.86" y="47.117" size="1.778" layer="25" ratio="10"/>
-<attribute name="VALUE" x="24.4602" y="44.958" size="1.778" layer="27" ratio="10" rot="R270"/>
+<attribute name="VALUE" x="24.4602" y="44.958" size="1.778" layer="21" ratio="10" rot="R270"/>
 </element>
 <element name="U$2" library="HW2" package="SLIDE" value="SLIDE" x="14.351" y="2.794" smashed="yes" rot="R180">
 <attribute name="VALUE" x="16.383" y="5.461" size="1.27" layer="21" rot="R180"/>
@@ -1179,6 +1178,13 @@ design rules under a new name.</description>
 <approved hash="4,16,48b1cb3dddc2aace"/>
 <approved hash="4,16,4569db12e13d8606"/>
 <approved hash="4,16,4869e767e990b336"/>
+<approved hash="4,1,6790f0db6095035c"/>
+<approved hash="4,1,73f7ff1b6ca51fd7"/>
+<approved hash="4,1,5b21f8e76889328d"/>
+<approved hash="4,1,804efce76891ec6e"/>
+<approved hash="4,1,8ca5e0f77081f8e1"/>
+<approved hash="4,1,9d24f8e36895f480"/>
+<approved hash="4,1,a99bf0d360e5cd3b"/>
 </errors>
 </board>
 </drawing>

@@ -15845,8 +15845,8 @@ Source: www.kingbright.com</description>
 <instance part="+3V2" gate="G$1" x="86.36" y="71.12" rot="MR0"/>
 <instance part="+3V3" gate="G$1" x="93.98" y="55.88"/>
 <instance part="+3V4" gate="G$1" x="129.54" y="106.68"/>
-<instance part="+3V5" gate="G$1" x="83.82" y="12.7"/>
-<instance part="+3V6" gate="G$1" x="83.82" y="-5.08"/>
+<instance part="+3V5" gate="G$1" x="78.74" y="7.62"/>
+<instance part="+3V6" gate="G$1" x="78.74" y="-12.7"/>
 <instance part="+3V7" gate="G$1" x="167.64" y="22.86"/>
 <instance part="P+3" gate="1" x="167.64" y="-10.16"/>
 <instance part="+3V8" gate="G$1" x="76.2" y="45.72" rot="MR0"/>
@@ -16035,6 +16035,18 @@ Source: www.kingbright.com</description>
 <pinref part="+3V7" gate="G$1" pin="+3V3"/>
 <wire x1="144.78" y1="20.32" x2="167.64" y2="20.32" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="+3V5" gate="G$1" pin="+3V3"/>
+<pinref part="R3" gate="G$1" pin="2"/>
+<wire x1="78.74" y1="5.08" x2="83.82" y2="5.08" width="0.1524" layer="91"/>
+<label x="83.82" y="2.54" size="1.778" layer="95" rot="R180"/>
+</segment>
+<segment>
+<pinref part="+3V6" gate="G$1" pin="+3V3"/>
+<pinref part="R4" gate="G$1" pin="2"/>
+<wire x1="78.74" y1="-15.24" x2="83.82" y2="-15.24" width="0.1524" layer="91"/>
+<label x="83.82" y="-17.78" size="1.778" layer="95" rot="R180"/>
+</segment>
 </net>
 <net name="N$5" class="0">
 <segment>
@@ -16079,11 +16091,6 @@ Source: www.kingbright.com</description>
 <pinref part="U$8" gate="G$1" pin="MCLR"/>
 <wire x1="99.06" y1="58.42" x2="91.44" y2="58.42" width="0.1524" layer="91"/>
 <label x="91.44" y="58.42" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="+3V5" gate="G$1" pin="+3V3"/>
-<pinref part="R3" gate="G$1" pin="2"/>
-<wire x1="83.82" y1="10.16" x2="83.82" y2="5.08" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="R3" gate="G$1" pin="1"/>
@@ -16178,11 +16185,6 @@ Source: www.kingbright.com</description>
 <pinref part="U$1" gate="G$1" pin="11.B4/USER"/>
 <wire x1="15.24" y1="17.78" x2="5.08" y2="17.78" width="0.1524" layer="91"/>
 <label x="5.08" y="17.78" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="+3V6" gate="G$1" pin="+3V3"/>
-<pinref part="R4" gate="G$1" pin="2"/>
-<wire x1="83.82" y1="-7.62" x2="83.82" y2="-15.24" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="U$6" gate="G$1" pin="4"/>

@@ -15761,7 +15761,7 @@ Source: www.kingbright.com</description>
 <part name="U$6" library="HW2" deviceset="CONN_08" device=""/>
 <part name="U$7" library="HW2" deviceset="CONN_08" device=""/>
 <part name="U$8" library="HW2" deviceset="PICKIT3" device=""/>
-<part name="U$9" library="HW2" deviceset="OSC" device="" value="8MHz"/>
+<part name="OSC" library="HW2" deviceset="OSC" device="" value="8MHz"/>
 <part name="GND1" library="HW2" deviceset="GND" device=""/>
 <part name="GND2" library="HW2" deviceset="GND" device=""/>
 <part name="GND3" library="HW2" deviceset="GND" device=""/>
@@ -15819,7 +15819,7 @@ Source: www.kingbright.com</description>
 <instance part="U$6" gate="G$1" x="139.7" y="25.4"/>
 <instance part="U$7" gate="G$1" x="139.7" y="-7.62"/>
 <instance part="U$8" gate="G$1" x="104.14" y="48.26"/>
-<instance part="U$9" gate="G$1" x="-12.7" y="33.02" rot="R180"/>
+<instance part="OSC" gate="G$1" x="-12.7" y="33.02" rot="R180"/>
 <instance part="GND1" gate="1" x="7.62" y="30.48"/>
 <instance part="GND2" gate="1" x="0" y="30.48"/>
 <instance part="GND3" gate="1" x="-5.08" y="-5.08"/>
@@ -15892,7 +15892,7 @@ Source: www.kingbright.com</description>
 <wire x1="7.62" y1="33.02" x2="15.24" y2="33.02" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="U$9" gate="G$1" pin="2.GND"/>
+<pinref part="OSC" gate="G$1" pin="2.GND"/>
 <pinref part="GND2" gate="1" pin="GND"/>
 <wire x1="-7.62" y1="33.02" x2="0" y2="33.02" width="0.1524" layer="91"/>
 </segment>
@@ -16069,7 +16069,7 @@ Source: www.kingbright.com</description>
 <wire x1="-7.62" y1="12.7" x2="-7.62" y2="22.86" width="0.1524" layer="91"/>
 <pinref part="U$1" gate="G$1" pin="10.OSC2/A3"/>
 <wire x1="-7.62" y1="22.86" x2="15.24" y2="22.86" width="0.1524" layer="91"/>
-<pinref part="U$9" gate="G$1" pin="3.OSC2"/>
+<pinref part="OSC" gate="G$1" pin="3.OSC2"/>
 <wire x1="-7.62" y1="38.1" x2="-7.62" y2="45.72" width="0.1524" layer="91"/>
 <wire x1="-7.62" y1="45.72" x2="-25.4" y2="45.72" width="0.1524" layer="91"/>
 </segment>
@@ -16175,7 +16175,7 @@ Source: www.kingbright.com</description>
 </net>
 <net name="N$7" class="0">
 <segment>
-<pinref part="U$9" gate="G$1" pin="1.OSC1"/>
+<pinref part="OSC" gate="G$1" pin="1.OSC1"/>
 <pinref part="U$1" gate="G$1" pin="9.OSC1/A2"/>
 <wire x1="-7.62" y1="27.94" x2="15.24" y2="27.94" width="0.1524" layer="91"/>
 </segment>
