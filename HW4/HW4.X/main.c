@@ -1,5 +1,8 @@
 #include<xc.h>           // processor SFR definitions
 #include<sys/attribs.h>  // __ISR macro
+#include "SPI.h"
+#include "I2C.h"
+#include <math.h>
 
 // DEVCFG0
 #pragma config DEBUG = 0b1 // no debugging
@@ -36,9 +39,63 @@
 #pragma config FUSBIDIO = 1 // USB pins controlled by USB module
 #pragma config FVBUSONIO = 1 // USB BUSON controlled by USB module
 
-#define DELAYTIME 20000 // 0.5 ms;
+#define DELAYTIME 40000 // 1 ms;
 
 
 int main() {
+    __builtin_disable_interrupts();
+
+    // set the CP0 CONFIG register to indicate that kseg0 is cacheable (0x3)
+    __builtin_mtc0(_CP0_CONFIG, _CP0_CONFIG_SELECT, 0xa4210583);
+
+    // 0 data RAM access wait states
+    BMXCONbits.BMXWSDRM = 0x0;
+
+    // enable multi vector interrupts
+    INTCONbits.MVEC = 0x1;
+
+    // disable JTAG to get pins back
+    DDPCONbits.JTAGEN = 0;
+    
+    TRISAbits.TRISA4 = 0;
+    LATAbits.LATA4 = 1;
+    TRISBbits.TRISB4 = 1;
+    
+    __builtin_enable_interrupts();
+    
+    initSPI1(); // initialize spi
+    initI2C(); // initialize i2c
+    initExpander; // initialize I/O expander
+    
+    double Vouta = 128; // sin wave 10 Hz
+    double Voutb = 0; // triangle wave 5 Hz
+    double time = 0; // time to calculate sine
+    
+    while(1) {
+        
+        _CP0_SET_COUNT(0);  // set system clock to zero
+        while(_CP0_GET_COUNT() < 24000) { // wait 1ms
+        ; }
+        
+        setVoltage(0,Vouta);
+        setVoltage(1,Voutb);
+        
+        // update voltage values
+        Vouta = 128 + 127*sin(62.831*time); // 2*pi*10Hz = 62.831
+        time = time + 0.001;
+        Voutb = Voutb + 1.28; // (256/200) time steps
+        if(Voutb > 256) {
+            Voutb = 0; // reset at end of triangle
+        }
+        
+        char button = getExpander();
+        if((button & 0x80) >> 7 != 0) // user pressing button
+        {
+            setExpander(0, 1);
+        } else {
+            setExpander(0, 0);
+        }
+       
+    }
     
 }
