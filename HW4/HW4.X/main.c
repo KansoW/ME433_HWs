@@ -1,8 +1,8 @@
 #include<xc.h>           // processor SFR definitions
 #include<sys/attribs.h>  // __ISR macro
 #include "SPI.h"
-#include "I2C.h"
 #include <math.h>
+#include <stdio.h>
 
 // DEVCFG0
 #pragma config DEBUG = 0b1 // no debugging
@@ -39,10 +39,10 @@
 #pragma config FUSBIDIO = 1 // USB pins controlled by USB module
 #pragma config FVBUSONIO = 1 // USB BUSON controlled by USB module
 
-#define DELAYTIME 40000 // 1 ms;
 
 
 int main() {
+
     __builtin_disable_interrupts();
 
     // set the CP0 CONFIG register to indicate that kseg0 is cacheable (0x3)
@@ -57,45 +57,49 @@ int main() {
     // disable JTAG to get pins back
     DDPCONbits.JTAGEN = 0;
     
-    TRISAbits.TRISA4 = 0;
-    LATAbits.LATA4 = 1;
-    TRISBbits.TRISB4 = 1;
+    spi_init();
     
-    __builtin_enable_interrupts();
+    // Build sine and ramp waves
+    unsigned int sine_wave[100];
+    unsigned int ramp_wave[200];
+    double s_tmp, r_tmp;
+    int i,j;
     
-    initSPI1(); // initialize spi
-    initI2C(); // initialize i2c
-    initExpander; // initialize I/O expander
-    
-    double Vouta = 128; // sin wave 10 Hz
-    double Voutb = 0; // triangle wave 5 Hz
-    double time = 0; // time to calculate sine
-    
-    while(1) {
-        
-        _CP0_SET_COUNT(0);  // set system clock to zero
-        while(_CP0_GET_COUNT() < 24000) { // wait 1ms
-        ; }
-        
-        setVoltage(0,Vouta);
-        setVoltage(1,Voutb);
-        
-        // update voltage values
-        Vouta = 128 + 127*sin(62.831*time); // 2*pi*10Hz = 62.831
-        time = time + 0.001;
-        Voutb = Voutb + 1.28; // (256/200) time steps
-        if(Voutb > 256) {
-            Voutb = 0; // reset at end of triangle
-        }
-        
-        char button = getExpander();
-        if((button & 0x80) >> 7 != 0) // user pressing button
-        {
-            setExpander(0, 1);
-        } else {
-            setExpander(0, 0);
-        }
-       
+    for(i=0; i<100; i++){ //10Hz sine wave
+        s_tmp = (255.0/2.0) + (255.0/2.0)*sin(2*M_PI*(i/100.0));
+        sine_wave[i] = s_tmp;
+    }
+   
+    for(j=0; j<200; j++){ //5Hz triangle wave
+        r_tmp = (j/200.0)*255.0;
+        ramp_wave[j] = r_tmp;
     }
     
-}
+    __builtin_enable_interrupts();
+            
+    int k = 0, l = 0; // Counters
+    while(1) {
+        _CP0_SET_COUNT(0);
+        while(_CP0_GET_COUNT() < 48000000/2/1000){
+            ;
+        }
+        // Write sine wave to DAC A
+        write(A, sine_wave[k]);
+        
+        // Write ramp wave to DAC B
+        write(B, ramp_wave[l]);
+        
+        k++;
+        l++;
+        
+        //Reset list index
+        if (k == 100){
+            k = 0;
+        }
+        if (l == 200){
+            l = 0;
+        }
+        
+    }// end infinite while
+    
+}// end main

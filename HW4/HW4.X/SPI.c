@@ -1,50 +1,44 @@
-#include<xc.h>           // processor SFR definitions
-#include<sys/attribs.h>  // __ISR macro
+#include <proc/p32mx250f128b.h>
 #include "SPI.h"
 
-#define CS LATBbits.LATB7      // chip select pin
+void spi_init(void){
+    SPI1CON = 0;
+    SPI1BUF;                 // clear rx buffer
+    SPI1BRG = 1;
+    //0x1000;        // baud rate compatible with nScope
+    SPI1STATbits.SPIROV = 0; // clear overflow bit
+    SPI1CONbits.CKE = 1;     // change voltage output when clk active -> idle
+    SPI1CONbits.CKP = 0;     // clk active when high
+    SPI1CONbits.MSTEN = 1;    
+    SPI1CONbits.ON = 1;
 
-void initSPI1() {
-    
-  TRISBbits.TRISB7 = 0; // set B13 as output
-  CS = 1; // initialize chip select
-  
-  // SDI1Rbits.SDI1R = 0b0; // use B# as SDI1 pin
-  RPB13Rbits.RPB13R = 0b0011;  // use B15 as SD01 pin
-  
-  SPI1CON = 0;              // reset spi
-  SPI1BUF;                  // clear buffer
-  SPI1BRG = 0x1;            // baud rate 12 MHz 
-  SPI1STATbits.SPIROV = 0;  // clear overflow bit
-  SPI1CONbits.CKE = 1;      // data changes when clock goes from hi to lo 
-  SPI1CONbits.MSTEN = 1;    // master operation
-  SPI1CONbits.ON = 1;       // turn on SPI1
+    //set cs pin as output
+    TRISAbits.TRISA4 = 0; //hook up CS wire to A4 (Pin 12)
+           
+    SDI1Rbits.SDI1R = 0x0;// RPA1 (Pin 3) as SDI1 Master input
+    ANSELBbits.ANSB13 = 0; // Disable analog
+    RPB13Rbits.RPB13R = 0b0011; // RPB13 as SDO1 Master output
+    // RPB14 is fixed to SCK1 for SPI1    
 }
 
-char SPI1_IO(char write)
-{
-    SPI1BUF = write;
-    while(!SPI1STATbits.SPIRBF) { // wait to receive the byte
+//Sends a byte using SPI and returns the response
+char spi_io(unsigned char c){
+    SPI1BUF = c;
+    while(!SPI1STATbits.SPIRBF){
         ;
     }
     return SPI1BUF;
 }
 
-void setVoltage(char channel, char voltage)
-{    
-    CS = 0; // start writing
-
-    unsigned char vb = (voltage & 0xF0) >> 4;
-    unsigned char va = (voltage & 0x0F) << 4;
- 
-    if(channel == 0) {
-        SPI1_IO(((0x3)<<4)|vb);
-        SPI1_IO(va);
-    } else {
-        SPI1_IO((0xB<<4)|vb);
-        SPI1_IO(va);
-    }
- 
-    CS = 1; // finish writing 
-   
+void write(unsigned int channel, unsigned int voltage){
+    unsigned int b1 = 0, b2 = 0; //bytes 1 and 2
+    
+    channel = (channel<<3 | 0b0111); //0b#111 
+    b1 = (channel<<4 | voltage>>4); //#111 0000, 0000 #### = #111 ####
+    b2 = voltage<<4; //#### 0000
+    
+    CS = 0; //Telling slave that I'm ready to send stuff
+    spi_io(b1);
+    spi_io(b2);
+    CS = 1; //Sending finished
 }
