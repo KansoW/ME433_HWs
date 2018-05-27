@@ -3,9 +3,9 @@
 
 void spi_init(void){
     SPI1CON = 0;
-    SPI1BUF;                 // clear rx buffer
+    SPI1BUF;                 // clear SPI buffer
     SPI1BRG = 1;
-    //0x1000;        // baud rate compatible with nScope
+    
     SPI1STATbits.SPIROV = 0; // clear overflow bit
     SPI1CONbits.CKE = 1;     // change voltage output when clk active -> idle
     SPI1CONbits.CKP = 0;     // clk active when high
@@ -13,7 +13,7 @@ void spi_init(void){
     SPI1CONbits.ON = 1;
 
     //set cs pin as output
-    TRISAbits.TRISA4 = 0; //hook up CS wire to A4 (Pin 12)
+    TRISBbits.TRISB7 = 0; // connect cs to A4
            
     SDI1Rbits.SDI1R = 0x0;// RPA1 (Pin 3) as SDI1 Master input
     ANSELBbits.ANSB13 = 0; // Disable analog
@@ -37,8 +37,8 @@ void write(unsigned int channel, unsigned int voltage){
     b1 = (channel<<4 | voltage>>4); //#111 0000, 0000 #### = #111 ####
     b2 = voltage<<4; //#### 0000
     
-    CS = 0; //Telling slave that I'm ready to send stuff
+    CS = 0; // start writing
     spi_io(b1);
     spi_io(b2);
-    CS = 1; //Sending finished
+    CS = 1; // finish writing
 }

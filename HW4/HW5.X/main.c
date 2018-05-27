@@ -1,6 +1,6 @@
 #include<xc.h>           // processor SFR definitions
 #include<sys/attribs.h>  // __ISR macro
-#include "SPI.h"
+#include "I2C.h"
 #include <math.h>
 #include <stdio.h>
 
@@ -39,8 +39,6 @@
 #pragma config FUSBIDIO = 1 // USB pins controlled by USB module
 #pragma config FVBUSONIO = 1 // USB BUSON controlled by USB module
 
-
-
 int main() {
 
     __builtin_disable_interrupts();
@@ -56,50 +54,23 @@ int main() {
 
     // disable JTAG to get pins back
     DDPCONbits.JTAGEN = 0;
-    
-    spi_init();
-    
-    // Build sine and ramp waves
-    unsigned int sine_wave[100];
-    unsigned int ramp_wave[200];
-    double s_tmp, r_tmp;
-    int i,j;
-    
-    for(i=0; i<100; i++){ //10Hz sine wave
-        s_tmp = (255.0/2.0) + (255.0/2.0)*sin(2*M_PI*(i/100.0));
-        sine_wave[i] = s_tmp;
-    }
-   
-    for(j=0; j<200; j++){ //5Hz triangle wave
-        r_tmp = (j/200.0)*255.0;
-        ramp_wave[j] = r_tmp;
-    }
+
+    // i2c setup functions
+    i2c_master_setup();
+    init_expander();  
     
     __builtin_enable_interrupts();
-            
-    int k = 0, l = 0; // Counters
+
     while(1) {
-        _CP0_SET_COUNT(0);
-        while(_CP0_GET_COUNT() < 24000){
-            ;
+       
+        if(get_expander(0x09) >> 7) { //GPIO = PORT, check if GP7 high
+            set_expander(0x0A, 0b1); //Tell OLAT to make GP0 high, LED on
         }
-        // Write sine wave to DAC A
-        write(A, sine_wave[k]);
         
-        // Write ramp wave to DAC B
-        write(B, ramp_wave[l]);
-        
-        k++;
-        l++;
-        
-        //Reset list index
-        if (k == 100){
-            k = 0;
-        }
-        if (l == 200){
-            l = 0;
+        else { //if GP7 low
+            set_expander(0x0A, 0b0); //Tell OLAT to make GP0 low, LED off
         }
         
     }// end infinite while
     
-}// end main
+}
