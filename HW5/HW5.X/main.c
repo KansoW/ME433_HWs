@@ -39,6 +39,7 @@
 #pragma config FUSBIDIO = 1 // USB pins controlled by USB module
 #pragma config FVBUSONIO = 1 // USB BUSON controlled by USB module
 
+
 int main() {
 
     __builtin_disable_interrupts();

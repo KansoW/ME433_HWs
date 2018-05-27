@@ -1,6 +1,6 @@
-#ifndef I2C_H__
-#define I2C_H__
-// Header file for I2C.c
+#ifndef I2C_MASTER_NOINT_H__
+#define I2C_MASTER_NOINT_H__
+// Header file for i2c_master_noint.c
 // helps implement use I2C1 as a master without using interrupts
 
 #define SLAVE_ADDR 0x20 //derived from opcode
