@@ -1,11 +1,11 @@
 #ifndef I2C_MASTER_NOINT_H__
 #define I2C_MASTER_NOINT_H__
-// Header file for i2c_master_noint.c
+// Header file for I2C.c
 // helps implement use I2C1 as a master without using interrupts
 
 #define SLAVE_ADDR 0x20 //derived from opcode
 
-void i2c_master_setup(void);              // set up I2C 1 as a master, at 100 kHz
+void i2c_master_setup(void);              // set up I2C2 as a master, at 100 kHz
 
 void i2c_master_start(void);              // send a START signal
 void i2c_master_restart(void);            // send a RESTART signal
