@@ -4,11 +4,11 @@
 // pin connections:
 // VCC - 3.3V
 // GND - GND
-// CS - B7
+// CS - B7 (pin 16)
 // RESET - 3.3V
-// A0 - B15
-// SDA - RA1
-// SCK - B14
+// A0 - B15  (pin 26)
+// SDA - RA1 (pin 3)
+// SCK - B14 (pin 25)
 // LED - 3.3V
 
 // B8 is turned into SDI1 but is not used or connected to anything
