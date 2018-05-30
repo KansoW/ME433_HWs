@@ -1,6 +1,3 @@
-// functions to operate the ILI9163C on the PIC32
-// adapted from https://github.com/sumotoy/TFT_ILI9163C/blob/master/TFT_ILI9163C.cpp
-
 // pin connections:
 // VCC - 3.3V
 // GND - GND
