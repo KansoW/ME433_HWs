@@ -111,6 +111,7 @@ APP_DATA appData;
   Remarks:
     See prototype in app.h.
  */
+#define DELAYTIME 20000 // 0.5 ms;
 
 void APP_Initialize ( void )
 {
@@ -121,6 +122,10 @@ void APP_Initialize ( void )
     /* TODO: Initialize your application's state machine and other
      * parameters.
      */
+    TRISAbits.TRISA4 = 0; // Pin 4 of Port A is LED1. Clear bit to zero for output.
+    TRISBbits.TRISB4 = 1; // Pin 4 of Port B is USER button. Set to 1 for input.
+    // TRISA = 0x00;
+    LATAbits.LATA4 = 1; // Turn LED1 ON
 }
 
 
@@ -154,7 +159,23 @@ void APP_Tasks ( void )
 
         case APP_STATE_SERVICE_TASKS:
         {
+            _CP0_SET_COUNT(0);
+    
+            while(1) {
+	        // use _CP0_SET_COUNT(0) and _CP0_GET_COUNT() to test the PIC timing
+	        // remember the core timer runs at half the sysclk
         
+                while(_CP0_GET_COUNT() < DELAYTIME) {
+                    while(!PORTBbits.RB4) {
+                    // 
+                    LATAbits.LATA4 = 0; // Turn LED1 OFF; USER button is low (FALSE) if pressed.
+                    }
+                }
+        
+            LATAINV = 0x0010;   // toggle LED1, 0x0010
+            _CP0_SET_COUNT(0);  // reset the core timer
+            }
+             
             break;
         }
 
