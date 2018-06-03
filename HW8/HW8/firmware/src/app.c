@@ -207,8 +207,8 @@ void APP_Tasks ( void )
                 sprintf(msg, "y = %f", yscale);
                 //draw_string(msg, 20, 110, RED, BLACK);
 
-                draw_xbar(64, 64, 50, 5, MAGENTA, BLACK, xscale); //xbar
-                draw_ybar(64, 64, 5, 50, MAGENTA, BLACK, yscale); //ybar
+                draw_xbar(64, 64, 50, 5, GREEN, BLACK, xscale); //xbar
+                draw_ybar(64, 64, 5, 50, GREEN, BLACK, yscale); //ybar
 
                 int i,j,xbox,ybox;
                 for(i=0;i<5;i++){
