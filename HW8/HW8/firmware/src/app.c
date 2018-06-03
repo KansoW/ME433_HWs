@@ -126,6 +126,12 @@ void APP_Initialize ( void )
     TRISBbits.TRISB4 = 1; // Pin 4 of Port B is USER button. Set to 1 for input.
     // TRISA = 0x00;
     LATAbits.LATA4 = 1; // Turn LED1 ON
+    
+    // initializations
+    SPI1_init(); // Talk to LCD
+    LCD_init();
+    i2c_master_setup(); // Talk to IMU
+    init_expander(); // Turn on accelerometer
 }
 
 
@@ -159,23 +165,68 @@ void APP_Tasks ( void )
 
         case APP_STATE_SERVICE_TASKS:
         {
-            _CP0_SET_COUNT(0);
-    
-            while(1) {
-	        // use _CP0_SET_COUNT(0) and _CP0_GET_COUNT() to test the PIC timing
-	        // remember the core timer runs at half the sysclk
+            if(!PORTBbits.RB4) {
+                LATAbits.LATA4 = 0; // if button pressed, turn red LED off
+            }
+
+            else {
+                _CP0_SET_COUNT(0);
+
+                while(_CP0_GET_COUNT()< DURATION ){
+                    ;// do nothing
+                }
+                LATAINV = 0b10000; // invert pin RA4
+            }
         
-                while(_CP0_GET_COUNT() < DELAYTIME) {
-                    while(!PORTBbits.RB4) {
-                    // 
-                    LATAbits.LATA4 = 0; // Turn LED1 OFF; USER button is low (FALSE) if pressed.
+            char msg[100];
+            int arrlen = 14;
+            unsigned char data[arrlen];
+            LCD_clearScreen(BLACK);
+
+            sprintf(msg, "WHOAMI output: %d", get_expander(WHO_AM_I)); //0b01101001
+            draw_string(msg, 20, 10, RED, BLACK); //register returns 105
+
+            while(1) {
+                i2c_read_multiple(SLAVE_ADDR, OUT_TEMP_L, data, arrlen);
+
+                // parse read values
+                signed short temp = (data[1] << 8) | data[0]; //16-bit short
+                signed short gyroX = (data[3] << 8) | data[2];
+                signed short gyroY = (data[5] << 8) | data[4];
+                signed short gyroZ = (data[7] << 8) | data[6];
+                signed short accelX = (data[9] << 8) | data[8];
+                signed short accelY = (data[11] << 8) | data[10];
+                signed short accelZ = (data[13] << 8) | data[12];
+
+                //scaling length and height
+                float xscale = accelX*0.000061*100; 
+                float yscale = accelY*0.000061*100;
+
+                sprintf(msg, "x = %f", xscale);
+                //draw_string(msg, 20, 100, RED, BLACK);
+                sprintf(msg, "y = %f", yscale);
+                //draw_string(msg, 20, 110, RED, BLACK);
+
+                draw_xbar(64, 64, 50, 5, MAGENTA, BLACK, xscale); //xbar
+                draw_ybar(64, 64, 5, 50, MAGENTA, BLACK, yscale); //ybar
+
+                int i,j,xbox,ybox;
+                for(i=0;i<5;i++){
+                    xbox = 64+i;
+                    for(j=0;j<5;j++){
+                        ybox = 64+j;
+                        LCD_drawPixel(xbox,ybox,WHITE);
                     }
                 }
-        
-            LATAINV = 0x0010;   // toggle LED1, 0x0010
-            _CP0_SET_COUNT(0);  // reset the core timer
-            }
-             
+
+                //5Hz loop
+                _CP0_SET_COUNT(0);
+                while (_CP0_GET_COUNT() < 48000000/2/5){
+                    ;
+                }
+
+            }// end infinite while
+
             break;
         }
 
