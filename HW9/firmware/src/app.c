@@ -1,14 +1,16 @@
 /*******************************************************************************
   MPLAB Harmony Application Source File
+  
   Company:
     Microchip Technology Inc.
+  
   File Name:
     app.c
   Summary:
     This file contains the source code for the MPLAB Harmony application.
   Description:
-    This file contains the source code for the MPLAB Harmony application.  It
-    implements the logic of the application's state machine and it may call
+    This file contains the source code for the MPLAB Harmony application.  It 
+    implements the logic of the application's state machine and it may call 
     API routines of other MPLAB Harmony modules in the system, such as drivers,
     system services, and middleware.  However, it does not call any of the
     system interfaces (such as the "Initialize" and "Tasks" functions) of any of
@@ -42,7 +44,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: Included Files
+// Section: Included Files 
 // *****************************************************************************
 // *****************************************************************************
 
@@ -58,8 +60,11 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 uint8_t APP_MAKE_BUFFER_DMA_READY dataOut[APP_READ_BUFFER_SIZE];
 uint8_t APP_MAKE_BUFFER_DMA_READY readBuffer[APP_READ_BUFFER_SIZE];
-int len, i = 0;
-int startTime = 0; // to remember the loop time
+int len, i = 0, write_flag = 0;
+int startTime = 0;
+unsigned char data[ARRLEN];
+signed short temp, gyroX, gyroY, gyroZ, accelX, accelY, accelZ;
+
 
 // *****************************************************************************
 /* Application Data
@@ -69,6 +74,7 @@ int startTime = 0; // to remember the loop time
     This structure holds the application's data.
   Remarks:
     This structure should be initialized by the APP_Initialize function.
+    
     Application strings and buffers are be defined outside this structure.
  */
 
@@ -294,6 +300,11 @@ bool APP_StateReset(void) {
  */
 
 void APP_Initialize(void) {
+    SPI1_init(); // Talk to LCD
+    LCD_init();
+    i2c_master_setup(); // Talk to IMU
+    init_expander(); // Turn on accelerometer
+    
     /* Place the App state machine in its initial state. */
     appData.state = APP_STATE_INIT;
 
@@ -327,8 +338,6 @@ void APP_Initialize(void) {
 
     /* Set up the read buffer */
     appData.readBuffer = &readBuffer[0];
-
-    /* PUT YOUR LCD, IMU, AND PIN INITIALIZATIONS HERE */
 
     startTime = _CP0_GET_COUNT();
 }
@@ -389,12 +398,6 @@ void APP_Tasks(void) {
                         &appData.readTransferHandle, appData.readBuffer,
                         APP_READ_BUFFER_SIZE);
 
-                        /* AT THIS POINT, appData.readBuffer[0] CONTAINS A LETTER
-                        THAT WAS SENT FROM THE COMPUTER */
-                        /* YOU COULD PUT AN IF STATEMENT HERE TO DETERMINE WHICH LETTER
-                        WAS RECEIVED (USUALLY IT IS THE NULL CHARACTER BECAUSE NOTHING WAS
-                      TYPED) */
-
                 if (appData.readTransferHandle == USB_DEVICE_CDC_TRANSFER_HANDLE_INVALID) {
                     appData.state = APP_STATE_ERROR;
                     break;
@@ -413,11 +416,9 @@ void APP_Tasks(void) {
             /* Check if a character was received or a switch was pressed.
              * The isReadComplete flag gets updated in the CDC event handler. */
 
-             /* WAIT FOR 5HZ TO PASS OR UNTIL A LETTER IS RECEIVED */
             if (appData.isReadComplete || _CP0_GET_COUNT() - startTime > (48000000 / 2 / 5)) {
                 appData.state = APP_STATE_SCHEDULE_WRITE;
             }
-
 
             break;
 
@@ -427,31 +428,65 @@ void APP_Tasks(void) {
             if (APP_StateReset()) {
                 break;
             }
-
+                    
             /* Setup the write */
+            i2c_read_multiple(SLAVE_ADDR, OUT_TEMP_L, data, ARRLEN);
 
+            // parse read values
+//            signed short temp = (data[1] << 8) | data[0]; //16-bit short
+//            signed short gyroX = (data[3] << 8) | data[2];
+//            signed short gyroY = (data[5] << 8) | data[4];
+//            signed short gyroZ = (data[7] << 8) | data[6];
+//            signed short accelX = (data[9] << 8) | data[8];
+//            signed short accelY = (data[11] << 8) | data[10];
+//            signed short accelZ = (data[13] << 8) | data[12];
+            
+            temp = (data[1] << 8) | data[0]; //16-bit short
+            gyroX = (data[3] << 8) | data[2];
+            gyroY = (data[5] << 8) | data[4];
+            gyroZ = (data[7] << 8) | data[6];
+            accelX = (data[9] << 8) | data[8];
+            accelY = (data[11] << 8) | data[10];
+            accelZ = (data[13] << 8) | data[12];
+            
             appData.writeTransferHandle = USB_DEVICE_CDC_TRANSFER_HANDLE_INVALID;
             appData.isWriteComplete = false;
             appData.state = APP_STATE_WAIT_FOR_WRITE_COMPLETE;
 
-            /* PUT THE TEXT YOU WANT TO SEND TO THE COMPUTER IN dataOut
-            AND REMEMBER THE NUMBER OF CHARACTERS IN len */
-            /* THIS IS WHERE YOU CAN READ YOUR IMU, PRINT TO THE LCD, ETC */
-            len = sprintf(dataOut, "%d\r\n", i);
-            i++; // increment the index so we see a change in the text
-            /* IF A LETTER WAS RECEIVED, ECHO IT BACK SO THE USER CAN SEE IT */
+            len = sprintf(dataOut, "Index:%d,\tax:%5.2f,\tay:%5.2f,\taz:%5.2f,\tgx:%5.2f,\tgy:%5.2f,\tgz:%5.2f\r\n", i, accelX*0.00061, accelY*0.00061, accelZ*0.00061, gyroX*0.035, gyroY*0.035, gyroZ*0.035);
+            //len = sprintf(dataOut, "Index:%d\t \r\n", i);
+            
+            i++; //i = 1
             if (appData.isReadComplete) {
                 USB_DEVICE_CDC_Write(USB_DEVICE_CDC_INDEX_0,
                         &appData.writeTransferHandle,
                         appData.readBuffer, 1,
                         USB_DEVICE_CDC_TRANSFER_FLAGS_DATA_COMPLETE);
-            }
-            /* ELSE SEND THE MESSAGE YOU WANTED TO SEND */
-            else {
-                USB_DEVICE_CDC_Write(USB_DEVICE_CDC_INDEX_0,
-                        &appData.writeTransferHandle, dataOut, len,
-                        USB_DEVICE_CDC_TRANSFER_FLAGS_DATA_COMPLETE);
-                startTime = _CP0_GET_COUNT(); // reset the timer for acurate delays
+                if (appData.readBuffer[0] == 'r'){ //r means let's write stuff
+                    write_flag = 1;
+                    i = 0; //Reset i 
+                }
+            } else {
+                if(write_flag == 1){ //When not reading, write data to screen
+                    USB_DEVICE_CDC_Write(USB_DEVICE_CDC_INDEX_0,
+                    &appData.writeTransferHandle, dataOut, len,
+                    USB_DEVICE_CDC_TRANSFER_FLAGS_DATA_COMPLETE); //Like UART
+                    
+                    if(i==101){//Only reset if 100 counted
+                        write_flag = 0; 
+                        i = 0;
+                    }
+                }
+                else{
+                    len = 1;
+                    dataOut[0] = 0; //Sending blank packet
+                    USB_DEVICE_CDC_Write(USB_DEVICE_CDC_INDEX_0,
+                    &appData.writeTransferHandle, dataOut, len,
+                    USB_DEVICE_CDC_TRANSFER_FLAGS_DATA_COMPLETE);
+                }
+
+                startTime = _CP0_GET_COUNT();
+                
             }
             break;
 

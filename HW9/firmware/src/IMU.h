@@ -1,5 +1,5 @@
-#ifndef IMU_H__
-#define IMU_H__
+#ifndef I2C_MASTER_IMU_H__
+#define I2C_MASTER_IMU_H__
 // Header file for i2c_master_noint.c
 // helps implement use I2C1 as a master without using interrupts
 
@@ -10,6 +10,7 @@
 #define WHO_AM_I   0x0F
 #define OUT_TEMP_L 0x20
 #define OUTX_L_XL  0x28
+#define ARRLEN 14
 
 void i2c_master_setup(void);              // set up I2C 1 as a master, at 100 kHz
 
