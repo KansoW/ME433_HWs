@@ -1,4 +1,4 @@
-/*******************************************************************************
+    /*******************************************************************************
   System Definitions
 
   File Name:
@@ -91,6 +91,7 @@ extern "C" {
 typedef struct
 {
 
+    SYS_MODULE_OBJ  sysDevcon;
     SYS_MODULE_OBJ  drvUSBObject;
     
     SYS_MODULE_OBJ  usbDevObject0;
