@@ -1,6 +1,6 @@
 #ifndef I2C_MASTER_IMU_H__
 #define I2C_MASTER_IMU_H__
-// Header file for i2c_master_noint.c
+// Header file for IMU.c
 // helps implement use I2C1 as a master without using interrupts
 
 #define SLAVE_ADDR 0x6B //7-bit chip address 0b1101011

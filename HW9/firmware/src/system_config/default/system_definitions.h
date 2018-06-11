@@ -39,23 +39,29 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #ifndef _SYS_DEFINITIONS_H
 #define _SYS_DEFINITIONS_H
 
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Included Files
 // *****************************************************************************
 // *****************************************************************************
+
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
 #include "system/common/sys_common.h"
 #include "system/common/sys_module.h"
-#include "system/devcon/sys_devcon.h"
 #include "system/clk/sys_clk.h"
+#include "system/clk/sys_clk_static.h"
+#include "system/devcon/sys_devcon.h"
 #include "system/int/sys_int.h"
 #include "system/ports/sys_ports.h"
 #include "driver/usb/usbfs/drv_usbfs.h"
 #include "usb/usb_device.h"
+
+
 #include "usb/usb_device_cdc.h"
+
 #include "app.h"
 
 
@@ -65,7 +71,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 extern "C" {
 
 #endif
-// DOM-IGNORE-END
+// DOM-IGNORE-END 
 
 // *****************************************************************************
 // *****************************************************************************
@@ -75,14 +81,11 @@ extern "C" {
 
 // *****************************************************************************
 /* System Objects
-
   Summary:
     Structure holding the system's object handles
-
   Description:
     This structure contains the object handles for all objects in the
     MPLAB Harmony project's system configuration.
-
   Remarks:
     These handles are returned from the "Initialize" functions for each module
     and must be passed into the "Tasks" function for each module.
@@ -90,7 +93,6 @@ extern "C" {
 
 typedef struct
 {
-
     SYS_MODULE_OBJ  sysDevcon;
     SYS_MODULE_OBJ  drvUSBObject;
     
@@ -100,6 +102,7 @@ typedef struct
 
 } SYSTEM_OBJECTS;
 
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: extern declarations
@@ -107,6 +110,7 @@ typedef struct
 // *****************************************************************************
 
 extern SYSTEM_OBJECTS sysObj;
+
 
 
 //DOM-IGNORE-BEGIN
@@ -119,4 +123,3 @@ extern SYSTEM_OBJECTS sysObj;
 /*******************************************************************************
  End of File
 */
-
