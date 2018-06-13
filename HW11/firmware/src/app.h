@@ -60,6 +60,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "system_config.h"
 #include "system_definitions.h"
 #include "mouse.h"
+#include "IMU.h"
+
 
 // *****************************************************************************
 // *****************************************************************************
