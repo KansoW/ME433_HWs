@@ -6,7 +6,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
-public abstract class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
     SeekBar myControl;
     TextView myTextView;
 
@@ -14,14 +14,11 @@ public abstract class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         myControl = (SeekBar) findViewById(R.id.seek1);
-
         myTextView = (TextView) findViewById(R.id.textView01);
-        myTextView.setText("Hi!");
+        myTextView.setText("0");
         setMyControlListener();
     }
-
 
     private void setMyControlListener() {
         myControl.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -43,8 +40,7 @@ public abstract class MainActivity extends AppCompatActivity {
 
             }
         });
+
     }
 }
-
-
 
