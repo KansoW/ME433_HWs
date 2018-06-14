@@ -364,7 +364,20 @@ void APP_Initialize(void) {
 	OC4CONbits.ON		= 1;			// turn on OC4
     TRISBbits.TRISB3 = 0;
     LATBbits.LATB3 = 0;                 // B3 is the direction pin to go along with OC4
-   
+    
+    /*
+    //Servo PWM
+    T3CONbits.TCKPS = 4; // prescaler N=16
+    PR3 = 60000 - 1; // 50Hz
+    TMR3 = 0;
+    RPB9Rbits.RPB9R = 0b0101; // B9
+    OC3CONbits.OCM = 0b110; // PWM mode without fault pin; other OC1CON bits are defaults
+    OC3CONbits.OCTSEL = 1; // use timer3
+    OC3RS = 4800; // should set the motor to 90 degrees (0.5ms to 2.5ms is 1500 to 7500 for 0 to 180 degrees)
+    OC3R = 4800; // read-only
+    T3CONbits.ON = 1;
+    OC3CONbits.ON = 1;
+    */
      
     TRISAbits.TRISA4 = 0;
     LATAbits.LATA4 = 1; //OFF 
@@ -488,7 +501,7 @@ void APP_Tasks(void) {
             
             if (gotRx) {
                 if (blue_flag) {
-                    OC3RS = 2200; // raise the sails!!
+                    //OC3RS = 2200; // raise the sails!!
                     len = sprintf(dataOut, "Raising sails!\r\n");
                     blue_flag = 0;
                     i = 0;
@@ -507,7 +520,7 @@ void APP_Tasks(void) {
             // lower the sails after 2s of no blue 
             if (i == 201) {
                 i = 0;
-                OC3RS = 4800; // lower the sails 
+                //OC3RS = 4800; // lower the sails 
             }
 
             USB_DEVICE_CDC_Write(USB_DEVICE_CDC_INDEX_0,
