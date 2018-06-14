@@ -67,7 +67,6 @@ uint8_t APP_MAKE_BUFFER_DMA_READY dataOut[APP_READ_BUFFER_SIZE];
 uint8_t APP_MAKE_BUFFER_DMA_READY readBuffer[APP_READ_BUFFER_SIZE];
 int len, i = 0;
 int startTime = 0;
-
 char rx[64]; // the raw data
 int rxPos = 0; // how much data has been stored
 int gotRx = 0; // the flag
@@ -393,7 +392,12 @@ void APP_Tasks(void) {
 
             appData.state = APP_STATE_WAIT_FOR_READ_COMPLETE;
             if (appData.isReadComplete == true) {
-                
+                appData.isReadComplete = false;
+                appData.readTransferHandle = USB_DEVICE_CDC_TRANSFER_HANDLE_INVALID;
+
+                USB_DEVICE_CDC_Read(USB_DEVICE_CDC_INDEX_0,
+                        &appData.readTransferHandle, appData.readBuffer,
+                        APP_READ_BUFFER_SIZE);
                 int ii = 0;
                 // loop thru the characters in the buffer
                 while (appData.readBuffer[ii] != 0) {
@@ -412,20 +416,12 @@ void APP_Tasks(void) {
                         ii++;
                     }
                 }
-                
-                appData.isReadComplete = false;
-                appData.readTransferHandle = USB_DEVICE_CDC_TRANSFER_HANDLE_INVALID;
-
-                USB_DEVICE_CDC_Read(USB_DEVICE_CDC_INDEX_0,
-                        &appData.readTransferHandle, appData.readBuffer,
-                        APP_READ_BUFFER_SIZE);
-
                 if (appData.readTransferHandle == USB_DEVICE_CDC_TRANSFER_HANDLE_INVALID) {
                     appData.state = APP_STATE_ERROR;
                     break;
                 }
             }
-
+            
             break;
 
         case APP_STATE_WAIT_FOR_READ_COMPLETE:
@@ -441,7 +437,6 @@ void APP_Tasks(void) {
             if (gotRx || _CP0_GET_COUNT() - startTime > (48000000 / 2 / 5)) {
                 appData.state = APP_STATE_SCHEDULE_WRITE;
             }
-
             break;
 
 
@@ -457,7 +452,7 @@ void APP_Tasks(void) {
             appData.isWriteComplete = false;
             appData.state = APP_STATE_WAIT_FOR_WRITE_COMPLETE;
 
-             if (gotRx) {
+            if (gotRx) {
                 len = sprintf(dataOut, "got: %d\r\n", rxVal);
                 i++;
                 USB_DEVICE_CDC_Write(USB_DEVICE_CDC_INDEX_0,
