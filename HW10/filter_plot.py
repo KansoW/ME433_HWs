@@ -4,7 +4,7 @@ import serial
 import matplotlib.pyplot as plt
 
 def main():
-    port = serial.Serial('/dev/ttyACM1',9600,timeout=60)
+    port = serial.Serial('/dev/ttyACM0',9600,timeout=60)
     port.write('r')
 
     raw = []
